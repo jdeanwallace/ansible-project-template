@@ -1,0 +1,7 @@
+{% raw -%}
+---
+
+# Add host specific vars here...
+
+...
+{% endraw -%}

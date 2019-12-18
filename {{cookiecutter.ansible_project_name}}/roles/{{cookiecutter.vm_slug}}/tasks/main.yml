@@ -1,0 +1,163 @@
+---
+
+# UFW
+
+- name: Install UFW.
+  apt:
+    package: ufw
+    state: present
+
+- name: Reset UFW.
+  ufw:
+    state: reset
+
+- name: Configure UFW defaults.
+  ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  with_items:
+    - { direction: 'incoming', policy: 'deny' }
+    - { direction: 'outgoing', policy: 'allow' }
+
+- name: Configure dev UFW rules.
+  ufw:
+    rule: "{{ item.rule }}"
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+    src: "{{ item.src }}"
+  when: env == 'dev'
+  with_items:
+    - { rule: 'allow', port: null, proto: 'any', src: 'any' }
+
+- name: Configure UFW rules.
+  ufw:
+    rule: "{{ item.rule }}"
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+    src: "{{ item.src }}"
+  with_items:
+    - { rule: 'limit', port: '22', proto: 'tcp', src: 'any' }
+    - { rule: 'allow', port: '80', proto: 'tcp', src: 'any' }
+    - { rule: 'allow', port: '443', proto: 'tcp', src: 'any' }
+
+- name: Enable UFW logging.
+  ufw:
+    logging: 'on'
+
+- name: Enable UFW.
+  ufw:
+    state: enabled
+
+- name: Restart UFW.
+  service:
+    name: ufw
+    state: restarted
+
+
+# Fail2Ban
+
+- name: Install Fail2Ban.
+  apt:
+    name: fail2ban
+    state: present
+
+- name: Start Fail2Ban.
+  service:
+    name: fail2ban
+    state: started
+    enabled: yes
+
+
+# Swap
+
+- include_tasks: swap.yml
+  when: swap_file_enabled
+  tags: swap
+
+
+# Packages
+
+- name: Install security updates.
+  apt:
+    default_release: "{{ ansible_distribution_release }}-security"
+    update_cache: "{{ apt_update_cache }}"
+    upgrade: dist
+  when: env != 'dev'
+
+- name: Install base packages.
+  apt:
+    name:
+      - locales
+      - build-essential
+      - acl
+      - ntp
+      - htop
+      - git
+      - vim
+      - screen
+      - curl
+      - "{{ virtualenv_python_version }}-distutils"
+      - "{{ base_python_package }}-pip"
+      - "i{{ base_python_package }}"
+      - supervisor
+      - rabbitmq-server
+    update_cache: "{{ apt_update_cache }}"
+    state: present
+
+- name: Upgrade pip.
+  pip:
+    name: pip
+    state: latest
+
+
+# Users & Groups
+
+- name: Create the app group.
+  group:
+    name: "{{ app_group }}"
+    system: yes
+    state: present
+
+- name: Create the app user.
+  user:
+    name: "{{ app_user }}"
+    group: "{{ app_group }}"
+    shell: /bin/bash
+    state: present
+
+- name: Create {{ base_dir }} folder.
+  file:
+    path: "{{ base_dir }}"
+    group: "{{ app_group }}"
+    mode: 0755
+    state: directory
+
+- name: Create user .bash_aliases file.
+  template:
+    src: system/bash_aliases.sh
+    dest: "{{ home_dir }}/.bash_aliases"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: 0740
+    backup: yes
+  tags: deploy
+
+
+# Database
+
+- include_tasks: postgres.yml
+  tags: postgres
+
+
+# Webapp
+
+- include_tasks: webapp.yml
+  tags: webapp
+
+
+# NGINX
+
+- include_tasks: nginx.yml
+  tags: nginx
+
+...

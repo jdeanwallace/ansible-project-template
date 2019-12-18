@@ -1,0 +1,56 @@
+---
+
+base_python_package: "{{ ansible_python_interpreter | default('/usr/bin/python') | basename }}"
+
+apt_update_cache: yes
+
+app_name: example_app
+app_user: "{{ app_name }}"
+app_user_home_dir: /home/{{ app_user }}
+app_group: webapps
+app_project_name: example-app
+app_base_dir: /webapps
+app_project_dir: "{{ app_base_dir }}/{{ app_project_name }}"
+app_virtualenv_dir: "{{ app_base_dir }}/.virtualenvs/{{ app_project_name }}"
+app_virtualenv_python_version: python3
+app_requirements_file: "{{ app_project_dir }}/requirements/dev.txt"
+app_run_dir: "{{ app_virtualenv_dir }}/run"
+app_log_dir: "{{ app_virtualenv_dir }}/log"
+app_static_dir: "{{ app_virtualenv_dir }}/static"
+app_media_dir: "{{ app_virtualenv_dir }}/media"
+app_html_dir: "{{ app_virtualenv_dir }}/html"
+app_wsgi_module: "{{ app_app_name }}.wsgi:application"
+
+postgresql_version: 12
+postgresql_user: postgres
+
+django_settings_module: "{{ app_name }}.settings.dev"
+django_migrate: true
+django_collectstatic: true
+django_default_db_name: "{{ app_name }}"
+django_default_db_user: "{{ app_name }}"
+vault_django_default_db_password: password
+django_default_db_password: "{{ vault_django_default_db_password }}"
+django_default_db_host: 127.0.0.1
+django_default_db_port: 5432
+
+app_environment:
+  DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
+  LOG_DIR: "{{ app_log_dir }}"
+  STATIC_DIR: "{{ app_static_dir }}"
+  MEDIA_DIR: "{{ app_media_dir }}"
+  DEFAULT_DATABASE_NAME: "{{ django_default_db_name }}"
+  DEFAULT_DATABASE_USER: "{{ django_default_db_user }}"
+  DEFAULT_DATABASE_PASSWORD: "{{ django_default_db_password }}"
+  DEFAULT_DATABASE_HOST: "{{ django_default_db_host }}"
+  DEFAULT_DATABASE_PORT: "{{ django_default_db_port }}"
+
+gunicorn_num_workers: 3
+gunicorn_max_requests: 0
+gunicorn_reload_workers: true
+gunicorn_timeout_seconds: 30
+
+nginx_access_log_file: "{{ app_log_dir }}/nginx.access.log"
+nginx_error_log_file: "{{ app_log_dir }}/nginx.error.log"
+
+...

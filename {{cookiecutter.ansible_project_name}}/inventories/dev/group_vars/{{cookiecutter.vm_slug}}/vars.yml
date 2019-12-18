@@ -1,0 +1,11 @@
+{% raw -%}
+---
+
+# Add group specific vars here...
+
+app_user: "{{ ansible_user }}"
+app_name: {% endraw %}{{ cookiecutter.app_slug }}{% raw %}
+app_project_name: {% endraw %}{{ cookiecutter.app_project_name }}{% raw %}
+
+...
+{% endraw -%}

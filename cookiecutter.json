@@ -1,0 +1,9 @@
+{
+  "ansible_project_name": "example-ansible",
+  "app_project_name": "example-app",
+  "app_slug": "{{ cookiecutter.app_project_name|replace(' ', '-')|replace('-', '_') }}",
+  "vm_slug": "{{ cookiecutter.app_slug.split('_')[-1] }}",
+  "_copy_without_render": [
+    "roles/*/*.*"
+  ]
+}

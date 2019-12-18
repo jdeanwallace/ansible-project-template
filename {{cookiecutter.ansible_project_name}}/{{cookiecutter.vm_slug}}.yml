@@ -1,0 +1,23 @@
+---
+
+- name: Create {{ cookiecutter.vm_slug }} box.
+  hosts: all
+  become: yes
+  become_user: root
+
+  gather_facts: no
+  pre_tasks:
+    # Issue: https://gist.github.com/gwillem/4ba393dceb55e5ae276a87300f6b8e6f
+    - name: Install python 2.
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    # Issue: https://github.com/ansible/ansible/issues/45446
+    - name: Stop SSH connections breaking when ufw is enabled.
+      raw: echo 1 | sudo tee /proc/sys/net/netfilter/nf_conntrack_tcp_be_liberal
+      ignore_errors: True
+
+    - setup: # aka gather_facts: yes
+
+  roles:
+    - {{ cookiecutter.vm_slug }}
+
+...
