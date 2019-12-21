@@ -1,6 +1,6 @@
 {
   "ansible_project_name": "example-ansible",
-  "app_project_name": "example-app",
+  "app_project_name": "{{ cookiecutter.ansible_project_name.split('-')[0] }}-app",
   "app_slug": "{{ cookiecutter.app_project_name|replace(' ', '-')|replace('-', '_') }}",
   "vm_slug": "{{ cookiecutter.app_slug.split('_')[-1] }}",
   "_copy_without_render": [
