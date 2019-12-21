@@ -8,12 +8,12 @@
   tags: packages
 
 - name: Create the virtualenv.
-  command: virtualenv -p {{ virtualenv_python_version }} {{ virtualenv_dir }}
+  command: virtualenv -p {{ app_virtualenv_python_version }} {{ app_virtualenv_dir }}
   args:
-    creates: "{{ virtualenv_dir }}/bin/activate"
+    creates: "{{ app_virtualenv_dir }}/bin/activate"
 
 - name: Change ownership of virtualenv.
-  command: chown -R {{ app_user }}:{{ app_group }} {{ virtualenv_dir }}
+  command: chown -R {{ app_user }}:{{ app_group }} {{ app_virtualenv_dir }}
 
 - name: Create the app folders.
   file:
@@ -23,16 +23,16 @@
     mode: 0750
     state: directory
   with_items:
-    - "{{ log_dir }}"
-    - "{{ run_dir }}"
-    - "{{ static_dir }}"
-    - "{{ media_dir }}"
-    - "{{ html_dir }}"
+    - "{{ app_log_dir }}"
+    - "{{ app_run_dir }}"
+    - "{{ app_static_dir }}"
+    - "{{ app_media_dir }}"
+    - "{{ app_html_dir }}"
 
 - name: Create the virtualenv postactivate script to set environment variables.
   template:
     src: webapp/virtualenv_postactivate.sh
-    dest: "{{ virtualenv_dir }}/bin/postactivate"
+    dest: "{{ app_virtualenv_dir }}/bin/postactivate"
     owner: "{{ app_user }}"
     group: "{{ app_group }}"
     mode: 0750
@@ -42,9 +42,9 @@
 
 # Source
 
-- name: Create {{ project_dir }}.
+- name: Create {{ app_project_dir }}.
   file:
-    path: "{{ project_dir }}"
+    path: "{{ app_project_dir }}"
     owner: "{{ app_user }}"
     group: "{{ app_group }}"
     mode: 0750
@@ -55,15 +55,15 @@
   become_user: "{{ app_user }}"
   git:
     repo: git@github.com:jdeanwallace/django-project-template.git
-    dest: "{{ project_dir }}"
+    dest: "{{ app_project_dir }}"
     version: master
     accept_hostkey: yes
   when: env != 'dev'
 
 - name: Install packages required by the webapp inside virtualenv.
   pip:
-    virtualenv: "{{ virtualenv_dir }}"
-    requirements: "{{ requirements_file }}"
+    virtualenv: "{{ app_virtualenv_dir }}"
+    requirements: "{{ app_requirements_file }}"
 
 
 # Django
@@ -73,8 +73,8 @@
   become_user: "{{ app_user }}"
   django_manage:
     command: migrate
-    app_path: "{{ project_dir }}"
-    virtualenv: "{{ virtualenv_dir }}"
+    app_path: "{{ app_project_dir }}"
+    virtualenv: "{{ app_virtualenv_dir }}"
     settings: "{{ django_settings_module }}"
     database: "{{ item }}"
   environment: "{{ app_environment }}"
@@ -88,8 +88,8 @@
   become_user: "{{ app_user }}"
   django_manage:
     command: collectstatic
-    app_path: "{{ project_dir }}"
-    virtualenv: "{{ virtualenv_dir }}"
+    app_path: "{{ app_project_dir }}"
+    virtualenv: "{{ app_virtualenv_dir }}"
     settings: "{{ django_settings_module }}"
   environment: "{{ app_environment }}"
   when: django_collectstatic is defined and django_collectstatic
@@ -99,13 +99,13 @@
 
 - name: Ensure gunicorn is installed in the virtualenv.
   pip:
-    virtualenv: "{{ virtualenv_dir }}"
+    virtualenv: "{{ app_virtualenv_dir }}"
     name: gunicorn
 
 - name: Create the Gunicorn start script.
   template:
     src: webapp/gunicorn_start.sh
-    dest: "{{ virtualenv_dir }}/bin/gunicorn_start"
+    dest: "{{ app_virtualenv_dir }}/bin/gunicorn_start"
     owner: "{{ app_user }}"
     group: "{{ app_group }}"
     mode: 0750
@@ -127,7 +127,7 @@
 - name: Create Supervisor log files.
   copy:
     content: ""
-    dest: "{{ log_dir }}/{{ item }}"
+    dest: "{{ app_log_dir }}/{{ item }}"
     force: no
     owner: "{{ app_user }}"
     group: "{{ app_group }}"

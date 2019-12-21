@@ -4,6 +4,10 @@ base_python_package: "{{ ansible_python_interpreter | default('/usr/bin/python')
 
 apt_update_cache: yes
 
+swap_file_enabled: no
+swap_file: /swapfile
+swap_file_size_kb: 512
+
 app_name: example_app
 app_user: "{{ app_name }}"
 app_user_home_dir: /home/{{ app_user }}
@@ -19,7 +23,7 @@ app_log_dir: "{{ app_virtualenv_dir }}/log"
 app_static_dir: "{{ app_virtualenv_dir }}/static"
 app_media_dir: "{{ app_virtualenv_dir }}/media"
 app_html_dir: "{{ app_virtualenv_dir }}/html"
-app_wsgi_module: "{{ app_app_name }}.wsgi:application"
+app_wsgi_module: "{{ app_name }}.wsgi:application"
 
 postgresql_version: 12
 postgresql_user: postgres
@@ -52,5 +56,13 @@ gunicorn_timeout_seconds: 30
 
 nginx_access_log_file: "{{ app_log_dir }}/nginx.access.log"
 nginx_error_log_file: "{{ app_log_dir }}/nginx.error.log"
+
+certbot_auto_renew: yes
+certbot_script: /opt/certbot-auto
+certbot_dir: /etc/letsencrypt
+certbot_admin_email: admin@example.com
+certbot_domains:
+  - example.com
+  - www.example.com
 
 ...

@@ -96,7 +96,7 @@
       - vim
       - screen
       - curl
-      - "{{ virtualenv_python_version }}-distutils"
+      - "{{ app_virtualenv_python_version }}-distutils"
       - "{{ base_python_package }}-pip"
       - "i{{ base_python_package }}"
       - supervisor
@@ -125,9 +125,9 @@
     shell: /bin/bash
     state: present
 
-- name: Create {{ base_dir }} folder.
+- name: Create {{ app_base_dir }} folder.
   file:
-    path: "{{ base_dir }}"
+    path: "{{ app_base_dir }}"
     group: "{{ app_group }}"
     mode: 0755
     state: directory
@@ -135,7 +135,7 @@
 - name: Create user .bash_aliases file.
   template:
     src: system/bash_aliases.sh
-    dest: "{{ home_dir }}/.bash_aliases"
+    dest: "{{ app_user_home_dir }}/.bash_aliases"
     owner: "{{ app_user }}"
     group: "{{ app_group }}"
     mode: 0740

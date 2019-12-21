@@ -30,7 +30,7 @@
 - name: Create {{ app_name }} {{ env }} nginx config.
   template:
     src: nginx/gunicorn_nginx_without_ssl.conf
-    dest: /etc/nginx/sites-available/{{ project_name }}.conf
+    dest: /etc/nginx/sites-available/{{ app_project_name }}.conf
     backup: yes
   when: env == 'dev'
   notify: reload nginx
@@ -38,7 +38,7 @@
 - name: Create {{ app_name }} {{ env }} nginx config.
   template:
     src: nginx/gunicorn_nginx_with_ssl.conf
-    dest: /etc/nginx/sites-available/{{ project_name }}.conf
+    dest: /etc/nginx/sites-available/{{ app_project_name }}.conf
     backup: yes
   when: env != 'dev'
   notify: reload nginx
@@ -46,15 +46,15 @@
 - name: Create {{ app_name }} {{ env }} nginx ssl partial config.
   template:
     src: nginx/nginx_ssl_partial.conf
-    dest: /etc/nginx/sites-available/{{ project_name }}-ssl.partial.conf
+    dest: /etc/nginx/sites-available/{{ app_project_name }}-ssl.partial.conf
     backup: yes
   when: env != 'dev'
   notify: reload nginx
 
 - name: Enable {{ app_name }} nginx config.
   file:
-    src: /etc/nginx/sites-available/{{ project_name }}.conf
-    dest: /etc/nginx/sites-enabled/{{ project_name }}.conf
+    src: /etc/nginx/sites-available/{{ app_project_name }}.conf
+    dest: /etc/nginx/sites-enabled/{{ app_project_name }}.conf
     state: link
   notify: reload nginx
 
