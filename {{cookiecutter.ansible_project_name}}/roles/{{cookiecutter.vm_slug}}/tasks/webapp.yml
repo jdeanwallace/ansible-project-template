@@ -39,6 +39,16 @@
     backup: yes
   tags: deploy
 
+- name: Create a convenient way to work on the web-app.
+  template:
+    src: webapp/workon_app.sh
+    dest: "{{ app_user_home_dir }}/workon_{{ app_name }}.sh"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: 0740
+    backup: yes
+  tags: deploy
+
 
 # Source
 
