@@ -11,7 +11,7 @@ in mind, but it can be altered to deploy any web-app.
 
 ## Usage
 ```bash
-cookiecutter https://github.com/jdeanwallace/ansible-project-template/zipball/master
+cookiecutter https://github.com/jdeanwallace/ansible-project-template
 ```
 
 ---
