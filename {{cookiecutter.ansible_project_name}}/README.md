@@ -68,7 +68,7 @@ sudo visudo
 
 ```bash
 ssh REMOTE_USERNAME@{{ cookiecutter.vm_slug }}.example.com
-sudo su - ubuntu
+sudo su - admin
 ssh-keygen -t rsa -f ~/.ssh/{{ cookiecutter.app_project_name }}.id_rsa -C "admin@{{ cookiecutter.vm_slug }}.example.com"
 cat ~/.ssh/{{ cookiecutter.app_project_name }}.id_rsa.pub
 ```
