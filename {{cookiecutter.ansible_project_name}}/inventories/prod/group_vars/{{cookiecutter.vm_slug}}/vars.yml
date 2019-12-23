@@ -1,0 +1,14 @@
+{% raw -%}
+---
+
+# Add group specific vars here...
+
+app_user: "{{ ansible_user }}"
+app_name: {% endraw %}{{ cookiecutter.app_slug }}{% raw %}
+app_project_name: {% endraw %}{{ cookiecutter.app_project_name }}{% raw %}
+app_requirements_file: "{{ app_project_dir }}/requirements/base.txt"
+django_settings_module: "{{ app_name }}.settings.prod"
+gunicorn_reload_workers: false
+
+...
+{% endraw -%}

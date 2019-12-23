@@ -1,0 +1,8 @@
+{% raw -%}
+---
+
+# Add host specific vars here...
+gunicorn_num_workers: 5
+
+...
+{% endraw -%}
