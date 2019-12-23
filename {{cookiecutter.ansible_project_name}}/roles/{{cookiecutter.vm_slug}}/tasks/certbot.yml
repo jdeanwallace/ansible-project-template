@@ -15,7 +15,7 @@
   service:
     name: nginx
     state: stopped
-  when: !cert_status.stat.exists
+  when: not cert_status.stat.exists
 
 - name: Install certbot and generate cert.
   command: "{{ certbot_script }} certonly --noninteractive --agree-tos --standalone --expand --email {{ certbot_admin_email }} -d {{ certbot_domains | join(' -d ') }}"
@@ -26,7 +26,7 @@
   service:
     name: nginx
     state: started
-  when: !cert_status.stat.exists
+  when: not cert_status.stat.exists
 
 - name: Ensure a cron job to auto-renew the cert exists.
   cron:
