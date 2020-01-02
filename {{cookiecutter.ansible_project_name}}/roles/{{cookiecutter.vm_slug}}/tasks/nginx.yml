@@ -24,7 +24,7 @@
 - name: Generate a Diffie-Hellman group.
   command: openssl dhparam -out /etc/ssl/private/dhparams.pem 2048
   args:
-    creates: /etc/ssl/private/dhparam.pem
+    creates: /etc/ssl/private/dhparams.pem
   when: env != 'dev'
 
 - name: Create {{ app_name }} {{ env }} nginx config.
